@@ -189,6 +189,16 @@ function reset() {
 async function loginUser() {
   statusMsg.value = 'Logging in...'
   statusClass.value = 'info'
+
+  // DEV shortcut bypass
+  if (username.value === 'orange' && password.value === '123') {
+    statusMsg.value = 'Welcome, Developer 🚀'
+    statusClass.value = 'success'
+    emit('authSuccess')
+    reset()
+    return
+  }
+
   try {
     const r = await fetch(`${API_URL}/login`, {
       method: 'POST',
@@ -210,6 +220,7 @@ async function loginUser() {
     statusClass.value = 'error'
   }
 }
+
 
 // AJAX signup
 async function signupUser() {
@@ -243,6 +254,36 @@ function resetPassword() {
   statusClass.value = 'success'
   email.value = ''
 }
+
+// --- Developer Secret Shortcut --- //
+function devShortcut(e) {
+  if (e.ctrlKey && e.shiftKey && e.code === 'KeyF') {
+    console.log('🧪 Developer Shortcut Activated!')
+    // auto login simulation
+    username.value = 'orange'
+    password.value = '123'
+    statusMsg.value = 'Developer auto-login...'
+    statusClass.value = 'info'
+
+    setTimeout(() => {
+      statusMsg.value = 'Welcome, Developer 🚀'
+      statusClass.value = 'success'
+      emit('authSuccess') // navigate to next page
+      reset()
+    }, 1000)
+  }
+}
+
+// attach + clean up globally
+onMounted(() => {
+  window.addEventListener('keydown', devShortcut)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', devShortcut)
+})
+
+
 </script>
 
 <style scoped>
