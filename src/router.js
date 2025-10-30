@@ -1,3 +1,4 @@
+// src/router.js
 import { createRouter, createWebHistory } from 'vue-router'
 
 // Import components

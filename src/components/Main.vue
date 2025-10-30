@@ -2,174 +2,201 @@
   <div class="intro-page" :style="{ backgroundImage: `url('${currentBg}')` }">
     <div class="overlay"></div>
 
-    <h1 class="fade-in">
-      <span class="welcome-text">🌿 Welcome to</span>
-      <span :class="farmarogyaClass">
-        <template v-for="(char, index) in letters" :key="index">
-          <span
-            class="letter"
-            :class="{ staggered: isStaggered(index) }"
-            :style="{ animationDelay: getDelay(index) + 's' }"
-          >
-            {{ char }}
-          </span>
-        </template>
-      </span>
-    </h1>
+    <div class="content">
+      <h1 class="fade-in">
+        <span class="welcome-text">🌿 Welcome to</span>
+        <span :class="farmarogyaClass">
+          <template v-for="(char, index) in letters" :key="index">
+            <span
+              class="letter"
+              :class="{ staggered: isStaggered(index) }"
+              :style="{ animationDelay: getDelay(index) + 's' }"
+            >
+              {{ char }}
+            </span>
+          </template>
+        </span>
+      </h1>
 
-    <p class="subtitle fade-in">Choose what you want to do:</p>
+      <p class="subtitle fade-in">Choose what you want to do:</p>
 
-    <div class="options">
-      <!-- First Row: 3 items (now on top) -->
-      <div class="row second-row">
-        <div class="option" @mouseenter="handleSoilHover" @click="emitSelect('soiltest')">
-          <img :src="currentSoilImg" alt="Environmental AI Test" />
-          <p>Environmental AI Test</p>
+      <div class="options">
+        <div class="option" @mouseenter="handleMarketHover" @click="$emit('select', 'market')">
+          <div class="media"><img :src="currentMarketImg" alt="Buy & Sell" /></div>
+          <p class="label">Buy & Sell</p>
         </div>
 
-        <div class="option" @mouseenter="handleToolsHover" @click="emitSelect('tools')">
-          <img :src="currentToolsImg" alt="Accessory Tools" />
-          <p>Accessory Tools</p>
+        <div class="option" @mouseenter="handleFarmHover" @click="$emit('select', 'guide')">
+          <div class="media"><img :src="currentFarmImg" alt="Farming Guide" /></div>
+          <p class="label">Farming Guide</p>
         </div>
 
-        <div class="option" @mouseenter="handleFertilizerHover" @click="emitSelect('fertilizer')">
-          <img :src="currentFertilizerImg" alt="Fertilizer & Chemicals" />
-          <p>Fertilizer & Chemicals</p>
-        </div>
-      </div>
-
-      <!-- Second Row: 4 items (now below) -->
-      <div class="row first-row">
-        <div class="option" @mouseenter="handleMarketHover" @click="emitSelect('market')">
-          <img :src="currentMarketImg" alt="Buy & Sell" />
-          <p>Buy & Sell</p>
+        <div class="option" @mouseenter="handleDiseaseHover" @click="$emit('select', 'disease')">
+          <div class="media"><img :src="currentDiseaseImg" alt="Disease Detection" /></div>
+          <p class="label">Disease Detection</p>
         </div>
 
-        <div class="option" @mouseenter="handleFarmHover" @click="emitSelect('guide')">
-          <img :src="currentFarmImg" alt="Farming Guide" />
-          <p>Farming Guide</p>
+        <div class="option" @mouseenter="handleGardenHover" @click="$emit('select', 'tools')">
+          <div class="media"><img :src="currentGardenImg" alt="Garden Tools" /></div>
+          <p class="label">Farming Tools</p>
         </div>
 
-        <div class="option" @mouseenter="handleToolsHover" @click="emitSelect('tools')">
-          <img :src="currentToolsImg" alt="AI Chat" />
-          <p>AI Chat</p>
-        </div>
-
-        <div class="option" @mouseenter="handleDiseaseHover" @click="emitSelect('disease')">
-          <img :src="currentDiseaseImg" alt="Disease Detection" />
-          <p>Disease Detection</p>
+        <div class="option" @mouseenter="handleFertHover" @click="$emit('select', 'fertilizers')">
+          <div class="media"><img :src="currentFertImg" alt="Fertilizers & Chemicals" /></div>
+          <p class="label">Fertilizers</p>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from "vue";
 
-const emit = defineEmits(['select'])
-const emitSelect = (payload) => emit('select', payload)
+// Market images
+import market1 from "../assets/market1.png";
+import market2 from "../assets/market2.png";
+import market3 from "../assets/market3.png";
+import market4 from "../assets/market4.png";
 
-// -----------------------------
-// Import Images
-// -----------------------------
-import market1 from '../assets/market1.png'
-import market2 from '../assets/market2.png'
-import market3 from '../assets/market3.png'
-import market4 from '../assets/market4.png'
+// Farm images
+import farm1 from "../assets/farm1.png";
+import farm2 from "../assets/farm2.png";
+import farm3 from "../assets/farm3.png";
+import farm4 from "../assets/farm4.png";
 
-import farm1 from '../assets/farm1.png'
-import farm2 from '../assets/farm2.png'
-import farm3 from '../assets/farm3.png'
-import farm4 from '../assets/farm4.png'
+// Disease images
+import disease1 from "../assets/disease1.png";
+import disease2 from "../assets/disease2.png";
+import disease3 from "../assets/disease3.png";
+import disease4 from "../assets/disease4.png";
 
-import disease1 from '../assets/disease1.png'
-import disease2 from '../assets/disease2.png'
-import disease3 from '../assets/disease3.png'
-import disease4 from '../assets/disease4.png'
-
-import soil1 from '../assets/soil1.png'
-import soil2 from '../assets/soil2.png'
-import soil3 from '../assets/soil3.png'
-import soil4 from '../assets/soil4.png'
-
-import tools1 from '../assets/tools1.png'
-import tools2 from '../assets/tools2.png'
-import tools3 from '../assets/tools3.png'
-import tools4 from '../assets/tools4.png'
-
-import fert1 from '../assets/fert1.png'
-import fert2 from '../assets/fert2.png'
-import fert3 from '../assets/fert3.png'
-import fert4 from '../assets/fert4.png'
-
-// -----------------------------
-// Reactive Current Images
-// -----------------------------
-const currentMarketImg = ref(market1)
-const currentFarmImg = ref(farm1)
-const currentDiseaseImg = ref(disease1)
-const currentSoilImg = ref(soil1)
-const currentToolsImg = ref(tools1)
-const currentFertilizerImg = ref(fert1)
-
-// Arrays
-const marketImages = [market1, market2, market3, market4]
-const farmImages = [farm1, farm2, farm3, farm4]
-const diseaseImages = [disease1, disease2, disease3, disease4]
-const soilImages = [soil1, soil2, soil3, soil4]
-const toolsImages = [tools1, tools2, tools3, tools4]
-const fertilizerImages = [fert1, fert2, fert3, fert4]
-
-// Indices
-let marketIndex=0, farmIndex=0, diseaseIndex=0, soilIndex=0, toolsIndex=0, fertilizerIndex=0
-
-// Hover Handlers (change image + background)
-const handleMarketHover = () => { setBg('market'); marketIndex=(marketIndex+1)%marketImages.length; currentMarketImg.value=marketImages[marketIndex] }
-const handleFarmHover = () => { setBg('guide'); farmIndex=(farmIndex+1)%farmImages.length; currentFarmImg.value=farmImages[farmIndex] }
-const handleDiseaseHover = () => { setBg('disease'); diseaseIndex=(diseaseIndex+1)%diseaseImages.length; currentDiseaseImg.value=diseaseImages[diseaseIndex] }
-const handleSoilHover = () => { setBg('soiltest'); soilIndex=(soilIndex+1)%soilImages.length; currentSoilImg.value=soilImages[soilIndex] }
-const handleToolsHover = () => { setBg('tools'); toolsIndex=(toolsIndex+1)%toolsImages.length; currentToolsImg.value=toolsImages[toolsIndex] }
-const handleFertilizerHover = () => { setBg('fertilizer'); fertilizerIndex=(fertilizerIndex+1)%fertilizerImages.length; currentFertilizerImg.value=fertilizerImages[fertilizerIndex] }
-
-// -----------------------------
-// Background
-// -----------------------------
-const defaultBg='/images/main.jpg'
-const currentBg=ref(defaultBg)
-const bgMap={
-  market:['/images/Market/1.jpg','/images/Market/2.jpg','/images/Market/3.jpg','/images/Market/4.jpg'],
-  guide:['/images/Guide/1.jpg','/images/Guide/2.jpg','/images/Guide/3.jpg','/images/Guide/4.jpg','/images/Guide/5.jpg'],
-  disease:['/images/Disease/1.jpg','/images/Disease/2.jpg','/images/Disease/3.jpg','/images/Disease/4.jpg'],
-  soiltest:['/images/SoilTest/1.jpg','/images/SoilTest/2.jpg'],
-  tools:['/images/Tools/1.jpg','/images/Tools/2.jpg'],
-  fertilizer:['/images/Fertilizer/1.jpg','/images/Fertilizer/2.jpg']
-}
-const setBg=(type)=>{
-  const options=bgMap[type]
-  if(options && options.length>0){ currentBg.value = options[Math.floor(Math.random()*options.length)] }
-  else { currentBg.value=defaultBg }
+// Garden images
+const gardenImages = [
+  new URL("../assets/garden 1.png", import.meta.url).href,
+  new URL("../assets/garden 2.png", import.meta.url).href,
+  new URL("../assets/garden 3.png", import.meta.url).href,
+  new URL("../assets/garden 4.png", import.meta.url).href,
+];
+const currentGardenImg = ref(gardenImages[0]);
+let gardenIndex = 0;
+function handleGardenHover() {
+  setBg("garden");
+  gardenIndex = (gardenIndex + 1) % gardenImages.length;
+  currentGardenImg.value = gardenImages[gardenIndex];
 }
 
-// -----------------------------
-// Title animation
-// -----------------------------
-const letters='FarmArogya'.split('')
-const isStaggered=index=>index%2===0
-const getDelay=index=>(isStaggered(index)?index*0.2:(index+5)*0.15)
-const farmarogyaClass=ref('farmarogya non-firefox')
-onMounted(()=>{ if(navigator.userAgent.toLowerCase().includes('firefox')) farmarogyaClass.value='farmarogya firefox' })
+// Fertilizer images
+const fertImages = [
+  new URL("../assets/fert1.png", import.meta.url).href,
+  new URL("../assets/fert2.png", import.meta.url).href,
+  new URL("../assets/fert3.png", import.meta.url).href,
+  new URL("../assets/fert4.png", import.meta.url).href,
+];
+const currentFertImg = ref(fertImages[0]);
+let fertIndex = 0;
+function handleFertHover() {
+  setBg("fertilizers");
+  fertIndex = (fertIndex + 1) % fertImages.length;
+  currentFertImg.value = fertImages[fertIndex];
+}
+
+// Market logic
+const marketImages = [market1, market2, market3, market4];
+const currentMarketImg = ref(marketImages[0]);
+let marketIndex = 0;
+function handleMarketHover() {
+  setBg("market");
+  marketIndex = (marketIndex + 1) % marketImages.length;
+  currentMarketImg.value = marketImages[marketIndex];
+}
+
+// Farm logic
+const farmImages = [farm1, farm2, farm3, farm4];
+const currentFarmImg = ref(farmImages[0]);
+let farmIndex = 0;
+function handleFarmHover() {
+  setBg("guide");
+  farmIndex = (farmIndex + 1) % farmImages.length;
+  currentFarmImg.value = farmImages[farmIndex];
+}
+
+// Disease logic
+const diseaseImages = [disease1, disease2, disease3, disease4];
+const currentDiseaseImg = ref(diseaseImages[0]);
+let diseaseIndex = 0;
+function handleDiseaseHover() {
+  setBg("disease");
+  diseaseIndex = (diseaseIndex + 1) % diseaseImages.length;
+  currentDiseaseImg.value = diseaseImages[diseaseIndex];
+}
+
+// Backgrounds
+const defaultBg = "/images/main.jpg";
+const currentBg = ref(defaultBg);
+const bgMap = {
+  market: [
+    "/images/Market/1.jpg",
+    "/images/Market/2.jpg",
+    "/images/Market/3.jpg",
+    "/images/Market/4.jpg",
+  ],
+  guide: [
+    "/images/Guide/1.jpg",
+    "/images/Guide/2.jpg",
+    "/images/Guide/3.jpg",
+    "/images/Guide/4.jpg",
+    "/images/Guide/5.jpg",
+  ],
+  disease: [
+    "/images/Disease/1.jpg",
+    "/images/Disease/2.jpg",
+    "/images/Disease/3.jpg",
+    "/images/Disease/4.jpg",
+  ],
+  garden: [
+    "/images/Garden/1.jpg",
+    "/images/Garden/2.jpg",
+    "/images/Garden/3.jpeg",
+    "/images/Garden/4.jpeg",
+  ],
+  fertilizers: [
+    "/images/Fertilizers/1.jpg",
+    "/images/Fertilizers/2.jpg",
+    "/images/Fertilizers/3.jpg",
+    "/images/Fertilizers/4.jpg",
+  ],
+};
+const setBg = (type) => {
+  const options = bgMap[type];
+  if (options && options.length > 0) {
+    const randomIndex = Math.floor(Math.random() * options.length);
+    currentBg.value = options[randomIndex];
+  }
+};
+
+// Animation
+const letters = "FarmArogya".split("");
+const isStaggered = (index) => index % 2 === 0;
+const getDelay = (index) =>
+  isStaggered(index) ? index * 0.2 : (index + 5) * 0.15;
+
+// Browser detection
+const farmarogyaClass = ref("farmarogya non-firefox");
+onMounted(() => {
+  const ua = navigator.userAgent.toLowerCase();
+  if (ua.includes("firefox")) {
+    farmarogyaClass.value = "farmarogya firefox";
+  }
+});
 </script>
-
-
-
-
 
 <style scoped>
 @font-face {
-  font-family: 'Jejak';
-  src: url('../assets/fonts/JejakCintta.otf') format('opentype');
+  font-family: "Jejak";
+  src: url("../assets/fonts/JejakCintta.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
 }
 
 .intro-page {
@@ -210,26 +237,39 @@ h1 {
   font-weight: bold;
   display: flex;
   flex-wrap: wrap;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
   justify-content: center;
   gap: 0.15em;
   margin-bottom: 1rem;
-  font-family: 'Lucida Sans', Geneva, Verdana, sans-serif;
 }
 
 .welcome-text {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
   font-size: clamp(1.8rem, 4vw, 3rem);
   margin-right: 0.3em;
 }
 
-.farmarogya.non-firefox,
-.farmarogya.firefox {
-  font-family: 'Jejak', cursive;
+/* Non-Firefox browsers */
+.farmarogya.non-firefox {
+  position: relative;
+  top: -5%;
+  right: -2%;
+  font-family: "Jejak", cursive;
   font-size: clamp(2.5rem, 5vw, 3.2rem);
-  color: #27ae60;
+  color: #27ae60; /* fallback solid color */
+
+  background-size: 200% auto;
+  /* No -webkit-background-clip or -webkit-text-fill-color */
 }
 
+/* Firefox browsers */
 .farmarogya.firefox {
+  position: relative;
+  top: -5%;
+  right: -2%;
+  font-family: "Jejak", cursive;
+  font-size: clamp(2.5rem, 5vw, 3.2rem);
   background: linear-gradient(
     120deg,
     #0f3d27 20%,
@@ -269,82 +309,99 @@ h1 {
   padding: 0 1rem;
 }
 
-/* ======================
-   Flex layout for 2 rows
-====================== */
+/* ======= STABLE TILE STYLES (no resize on hover) ======= */
 .options {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.row {
-  display: flex;
-  gap: 30px;
   flex-wrap: wrap;
-}
-
-.first-row {
-  justify-content: flex-start;
-}
-
-.second-row {
   justify-content: center;
+  gap: 30px;
+  padding: 10px;
+  max-width: 1000px;
 }
 
-/* Card */
 .option {
+  /* fixed dimensions to prevent reflow */
+  width: 160px;
+  height: 260px;
+  min-width: 160px;
+  min-height: 260px;
+
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(4px);
   border-radius: 15px;
-  padding: 15px;
-  
-  width: 160px;
+  padding: 12px;
+  box-sizing: border-box;
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.5s ease;
-  margin-bottom: 10px;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
 }
 
-.option:hover {
-  transform: scale(1.08);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+/* media wrapper keeps image size constant */
+.option .media {
+  width: 100%;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.02);
 }
 
 .option img {
   width: 100%;
-  max-width: 130px;
-  border-radius: 10px;
-  margin-bottom: 10px;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
+/* reserve label area so text doesn't shift */
+.label,
 .option p {
+  margin: 8px 0 0 0;
+  font-weight: 700;
   color: #fff;
-  font-weight: bold;
-  font-size: clamp(1rem, 2.5vw, 1.1rem);
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  line-height: 1.15;
+  min-height: 2.2em;
 }
 
-/* ---------- Mobile ---------- */
-@media (max-width: 768px) {
-  .row {
-    justify-content: center;
+/* hover: visual-only (no transform/scale) */
+.option:hover,
+.option:focus {
+  box-shadow: 0 12px 40px rgba(39, 174, 96, 0.18);
+  background-color: rgba(255,255,255,0.14);
+  border-color: rgba(39,174,96,0.12);
+  outline: none;
+}
+
+/* Animations (kept) */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
   }
-  .option {
-    width: 140px;
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@media (max-width: 480px) {
-  .row {
-    flex-direction: column;
-    align-items: center;
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
   }
-  .option {
-    width: 80%;
-    max-width: 280px;
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -356,6 +413,36 @@ h1 {
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  h1 {
+    flex-direction: column;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .options {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .option {
+    width: 80%;
+    max-width: 300px;
+    height: auto;
+    min-height: 220px;
+  }
+
+  .welcome-text {
+    margin: 0;
+  }
+
+  .farmarogya {
+    top: 0;
+    right: 0;
   }
 }
 </style>

@@ -10,9 +10,12 @@
     />
 
     <!-- Step 3: Sub pages -->
-    <MarketPlace v-if="screen === 'market'" />
-    <FarmingGuide v-if="screen === 'guide'" />
-    <DiseaseDetector v-if="screen === 'disease'" />
+    <MarketPlace v-else-if="screen === 'market'" />
+    <FarmingGuide v-else-if="screen === 'guide'" />
+    <DiseaseDetector v-else-if="screen === 'disease'" />
+    <FarmingTools v-else-if="screen === 'tools'" />
+    <!-- Fertilizers & Chemicals page -->
+    <FertilizersAndChemicals v-else-if="screen === 'fertilizers'" />
   </div>
 </template>
 
@@ -26,6 +29,8 @@ import Main from './components/Main.vue'
 import MarketPlace from './components/MarketPlace.vue'
 import FarmingGuide from './components/FarmingGuide.vue'
 import DiseaseDetector from './components/DiseaseDetector.vue'
+import FarmingTools from './components/FarmingTools.vue'
+import FertilizersAndChemicals from './components/FertilizersAndChemicals.vue' // <-- new
 
 // Screen controller
 const screen = ref('auth') // Default page → Auth first
