@@ -1,4 +1,3 @@
-// src/router.js
 import { createRouter, createWebHistory } from 'vue-router'
 
 // Import components
@@ -6,18 +5,19 @@ import Auth from './components/Auth.vue'
 import Main from './components/Main.vue'
 import MarketPlace from './components/MarketPlace.vue'
 import FarmingGuide from './components/FarmingGuide.vue'
-import DiseaseDetector from './components/DiseaseDetector.vue'
+import AccessoryTools from './components/AccessoryTools.vue'
+import Fertilizer from './components/Fertilizer.vue'
 
 // Define routes
 const routes = [
-  { path: '/', component: Auth },                    // First page
-  { path: '/main', component: Main },                // After auth
-  { path: '/market', component: MarketPlace },       // Inside main navigation
+  { path: '/', component: Auth },
+  { path: '/main', component: Main },
+  { path: '/market', component: MarketPlace },
   { path: '/guide', component: FarmingGuide },
-  { path: '/disease', component: DiseaseDetector }
+  { path: '/tools', component: AccessoryTools },
+  { path: '/fertilizer', component: Fertilizer },
 ]
 
-// Create router
 const router = createRouter({
   history: createWebHistory(),
   routes

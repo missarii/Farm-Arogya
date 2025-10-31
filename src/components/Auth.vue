@@ -1,105 +1,105 @@
-
 <template>
-  <div class="auth-page" :style="{ backgroundImage: `url('${currentBg}')` }">
-    <div class="overlay"></div>
+  <!-- 3D animated background canvas -->
+  <canvas ref="fieldCanvas" class="field-canvas"></canvas>
 
-    <div class="animated-background">
-      <div class="circle large"></div>
-      <div class="circle medium"></div>
-      <div class="circle small"></div>
-      <div class="circle x-small"></div>
-    </div>
+  <!-- Auth shell -->
+  <div class="auth-page">
     <div class="auth-container">
-      <transition name="slide-up-fade" mode="out-in">
+      <transition name="flip-fade" mode="out-in">
         <div :key="activeTab" class="auth-card">
-          <form v-if="activeTab === 'login'" class="auth-form" @submit.prevent="loginUser">
-            <h2 class="premium-title">
-              <span class="welcome-text">Welcome </span>
-              <span class="back-text">Back</span>
-            </h2>
-            <p class="subtitle-text">ACCESS YOUR FARMING DASHBOARD.</p>
-            
-            <div class="input-group">
-                <input v-model="username" type="text" placeholder="Username" />
-            </div>
-            
-            <div class="input-group password-group">
-                <input 
-                    v-model="password" 
-                    :type="passwordVisible ? 'text' : 'password'" 
-                    placeholder="Password" 
-                />
-                <button 
-                    type="button" 
-                    class="password-toggle" 
-                    @click="togglePasswordVisibility"
-                    aria-label="Toggle Password Visibility"
-                >
-                    {{ passwordVisible ? '👁️' : '🔒' }}
-                </button>
-            </div>
-            
-            <button class="btn-premium" type="submit">LOGIN</button>
 
-            <p class="toggle">
-              Don’t have an account?
-              <span @click="switchTab('signup')">Sign Up</span>
-            </p>
-            <p class="toggle small" @click="switchTab('reset')">Forgot Password?</p>
+          <!-- LOGIN -->
+          <form v-if="activeTab==='login'" @submit.prevent="loginUser">
+            <div class="icon-emoji">🌿</div>
+            <h1 class="title">Farm<span>Arogya</span></h1>
+            <h2 class="subtitle">Sign in to your smart-farm</h2>
+
+            <div class="input-group">
+              <input v-model="username" type="text" required placeholder=" " autocomplete="username"/>
+              <label>Username</label>
+            </div>
+
+            <div class="input-group">
+              <input :type="showPassword ? 'text' : 'password'" v-model="password" required placeholder=" " autocomplete="current-password"/>
+              <label>Password</label>
+              <span class="toggle-pass" @click="showPassword = !showPassword">
+                <svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" viewBox="0 0 24 24">
+                  <path d="M12 5c-7 0-12 7-12 7s5 7 12 7 12-7 12-7-5-7-12-7zm0 12c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5z"/><circle cx="12" cy="12" r="2.5"/>
+                </svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" viewBox="0 0 24 24">
+                  <path d="M12 5c-7 0-12 7-12 7s5 7 12 7 12-7 12-7-5-7-12-7zm0 12c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5z" fill-opacity="0.3"/>
+                  <line x1="2" y1="2" x2="22" y2="22" stroke="white" stroke-width="2"/>
+                </svg>
+              </span>
+            </div>
+
+            <button class="btn-primary" type="submit">Enter Farm</button>
+
+            <div class="links">
+              <span @click="switchTab('signup')">Create account</span>
+              <span @click="switchTab('reset')">Forgot password?</span>
+            </div>
+
+            <p v-if="statusMsg" :class="statusClass">{{ statusMsg }}</p>
           </form>
 
-          <form v-else-if="activeTab === 'signup'" class="auth-form" @submit.prevent="signupUser">
-            <h2 class="premium-title">
-              <span class="welcome-text">Create </span>
-              <span class="back-text">Account</span>
-            </h2>
-            <p class="subtitle-text">JOIN THE FARMAROGYA PLATFORM.</p>
-            <div class="input-group">
-                <input v-model="username" type="text" placeholder="Username" required />
-            </div>
-            <div class="input-group">
-                <input v-model="email" type="email" placeholder="Email Address" required />
-            </div>
-            <div class="input-group">
-                <input 
-                    v-model="password" 
-                    :type="passwordVisible ? 'text' : 'password'" 
-                    placeholder="Password" 
-                    required 
-                />
-                 <button 
-                    type="button" 
-                    class="password-toggle" 
-                    @click="togglePasswordVisibility"
-                    aria-label="Toggle Password Visibility"
-                >
-                    {{ passwordVisible ? '👁️' : '🔒' }}
-                </button>
-            </div>
-            <button class="btn-premium" type="submit">REGISTER</button>
+          <!-- SIGNUP -->
+          <form v-else-if="activeTab==='signup'" @submit.prevent="signupUser">
+            <div class="icon-emoji">🌿</div>
+            <h1 class="title">Farm<span>Arogya</span></h1>
+            <h2 class="subtitle">Join the future of farming</h2>
 
-            <p class="toggle">
-              Already have an account?
-              <span @click="switchTab('login')">Login</span>
-            </p>
+            <div class="input-group">
+              <input v-model="username" type="text" required placeholder=" "/>
+              <label>Username</label>
+            </div>
+            <div class="input-group">
+              <input v-model="email" type="email" required placeholder=" "/>
+              <label>Email</label>
+            </div>
+            <div class="input-group">
+              <input :type="showPassword ? 'text' : 'password'" v-model="password" required placeholder=" "/>
+              <label>Password</label>
+              <span class="toggle-pass" @click="showPassword = !showPassword">
+                <svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" viewBox="0 0 24 24">
+                  <path d="M12 5c-7 0-12 7-12 7s5 7 12 7 12-7 12-7-5-7-12-7zm0 12c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5z"/><circle cx="12" cy="12" r="2.5"/>
+                </svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" viewBox="0 0 24 24">
+                  <path d="M12 5c-7 0-12 7-12 7s5 7 12 7 12-7 12-7-5-7-12-7zm0 12c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5z" fill-opacity="0.3"/>
+                  <line x1="2" y1="2" x2="22" y2="22" stroke="white" stroke-width="2"/>
+                </svg>
+              </span>
+            </div>
+
+            <button class="btn-primary" type="submit">Create Account</button>
+
+            <div class="links">
+              <span @click="switchTab('login')">Already have one? Sign in</span>
+            </div>
+
+            <p v-if="statusMsg" :class="statusClass">{{ statusMsg }}</p>
           </form>
 
-          <form v-else class="auth-form" @submit.prevent="resetPassword">
-            <h2 class="premium-title">
-              <span class="welcome-text">Password </span>
-              <span class="back-text">Reset</span>
-            </h2>
-             <p class="subtitle-text">WE'LL SEND YOU A RECOVERY LINK.</p>
-            <div class="input-group">
-                <input v-model="email" type="email" placeholder="Enter registered email" required />
-            </div>
-            <button class="btn-premium" type="submit">SEND LINK</button>
+          <!-- RESET -->
+          <form v-else @submit.prevent="resetPassword">
+            <div class="icon-emoji">🌿</div>
+            <h1 class="title">Farm<span>Arogya</span></h1>
+            <h2 class="subtitle">Reset your password</h2>
 
-            <p class="toggle">
-              Back to
-              <span @click="switchTab('login')">Login</span>
-            </p>
+            <div class="input-group">
+              <input v-model="email" type="email" required placeholder=" "/>
+              <label>Email</label>
+            </div>
+
+            <button class="btn-primary" type="submit">Send Reset Link</button>
+
+            <div class="links">
+              <span @click="switchTab('login')">Back to login</span>
+            </div>
+
+            <p v-if="statusMsg" :class="statusClass">{{ statusMsg }}</p>
           </form>
+
         </div>
       </transition>
     </div>
@@ -107,318 +107,411 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 
-const emit = defineEmits(['authSuccess'])
+const router = useRouter()
 
-const bgImages = [
-  '/images/main.jpg',
-  '/images/Market/2.jpg',
-  '/images/Guide/3.jpg',
-  '/images/Disease/1.jpg',
-  '/images/Guide/5.jpg',
-]
-const currentBg = ref(bgImages[0])
-setInterval(() => {
-  const random = Math.floor(Math.random() * bgImages.length)
-  currentBg.value = bgImages[random]
-}, 6000)
+// Canvas refs
+const fieldCanvas = ref(null)
+let ctx, w, h, cols, rows, vectors, angle = 0, animId
 
+function resize() {
+  w = innerWidth
+  h = innerHeight
+  fieldCanvas.value.width = w
+  fieldCanvas.value.height = h
+  const step = 28
+  cols = Math.floor(w / step) + 1
+  rows = Math.floor(h / step) + 1
+  vectors = []
+  for (let y = 0; y < rows; y++) {
+    vectors[y] = []
+    for (let x = 0; x < cols; x++) {
+      vectors[y][x] = Math.random() * Math.PI * 2
+    }
+  }
+}
+
+function drawField() {
+  ctx.clearRect(0, 0, w, h)
+  const step = 28
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+      const v = vectors[y][x] + angle
+      const sx = x * step, sy = y * step
+      const ex = sx + Math.cos(v) * 12
+      const ey = sy + Math.sin(v) * 12
+      ctx.strokeStyle = `rgba(46,204,113,${0.08 + Math.sin(v) * 0.04})`
+      ctx.lineWidth = 1.2
+      ctx.beginPath()
+      ctx.moveTo(sx, sy)
+      ctx.lineTo(ex, ey)
+      ctx.stroke()
+    }
+  }
+  angle += 0.003
+  animId = requestAnimationFrame(drawField)
+}
+
+onMounted(() => {
+  ctx = fieldCanvas.value.getContext('2d')
+  resize()
+  drawField()
+  window.addEventListener('resize', resize)
+})
+
+onBeforeUnmount(() => {
+  cancelAnimationFrame(animId)
+  window.removeEventListener('resize', resize)
+})
+
+// Form state
 const activeTab = ref('login')
 const username = ref('')
 const password = ref('')
 const email = ref('')
+const showPassword = ref(false)
+const API_URL = 'http://localhost:3000/users'
 
-// New state for password visibility
-const passwordVisible = ref(false);
+// Status
+const statusMsg = ref('')
+const statusClass = ref('')
 
-const switchTab = (tab) => (activeTab.value = tab)
-
-const loginUser = () => {
-  emit('authSuccess')
+// Tab switch
+const switchTab = (t) => {
+  activeTab.value = t
+  statusMsg.value = ''
+  statusClass.value = ''
 }
 
-const signupUser = () => alert(`Sign up for ${username.value}`)
-const resetPassword = () => alert(`Reset link sent to ${email.value}`)
-
-// New toggle password
-const togglePasswordVisibility = () => {
-    passwordVisible.value = !passwordVisible.value;
+// Reset form
+function resetForm() {
+  username.value = ''
+  password.value = ''
+  email.value = ''
+  showPassword.value = false
 }
+
+// Login
+async function loginUser() {
+  statusMsg.value = 'Logging in...'
+  statusClass.value = 'info'
+
+  // DEV shortcut
+  if (username.value === 'orange' && password.value === '123') {
+    statusMsg.value = 'Welcome, Developer!'
+    statusClass.value = 'success'
+    resetForm()
+    router.push('/main')
+    return
+  }
+
+  try {
+    const r = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: username.value, password: password.value })
+    })
+    const j = await r.json()
+    if (r.ok) {
+      statusMsg.value = 'Login successful!'
+      statusClass.value = 'success'
+      resetForm()
+      router.push('/main')  // Go to Main via router
+    } else {
+      statusMsg.value = j.error || 'Invalid credentials'
+      statusClass.value = 'error'
+    }
+  } catch {
+    statusMsg.value = 'Cannot connect to server'
+    statusClass.value = 'error'
+  }
+}
+
+// Signup
+async function signupUser() {
+  statusMsg.value = 'Creating account...'
+  statusClass.value = 'info'
+
+  try {
+    const r = await fetch(`${API_URL}/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: username.value, email: email.value, password: password.value })
+    })
+    const j = await r.json()
+    if (r.ok) {
+      statusMsg.value = 'Signup successful! Redirecting to login...'
+      statusClass.value = 'success'
+      resetForm()
+      setTimeout(() => switchTab('login'), 1500)
+    } else {
+      statusMsg.value = j.errors?.join(', ') || 'Signup failed'
+      statusClass.value = 'error'
+    }
+  } catch {
+    statusMsg.value = 'Cannot connect to server'
+    statusClass.value = 'error'
+  }
+}
+
+// Reset password (mock)
+function resetPassword() {
+  statusMsg.value = `Reset link sent to ${email.value}`
+  statusClass.value = 'success'
+  email.value = ''
+}
+
+// Developer shortcut: Ctrl+Shift+F
+function devShortcut(e) {
+  if (e.ctrlKey && e.shiftKey && e.code === 'KeyF') {
+    console.log('Developer Shortcut Activated!')
+    username.value = 'orange'
+    password.value = '123'
+    statusMsg.value = 'Developer auto-login...'
+    statusClass.value = 'info'
+    setTimeout(() => {
+      statusMsg.value = 'Welcome, Developer!'
+      statusClass.value = 'success'
+      resetForm()
+      router.push('/main')
+    }, 1000)
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', devShortcut)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', devShortcut)
+})
 </script>
 
-
 <style scoped>
+* { box-sizing: border-box }
 
 @font-face {
-  font-family: 'OrganicScript';
-  src: url('../assets/fonts/OrganicFarm.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
+  font-family: 'Agro';
+  src: url('../assets/fonts/JejakCintta.otf') format('opentype');
 }
 
-/* 🧠 Layout base */
+/* Canvas Background */
+.field-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  background: radial-gradient(ellipse at center, #0a1f0a 0%, #020502 100%);
+}
+
+/* Blurred garden background */
+.auth-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/images/garden.png') no-repeat center center;
+  background-size: cover;
+  filter: blur(1.5px);
+  z-index: -1;
+}
+
+/* Auth Layout */
 .auth-page {
   position: relative;
   min-height: 100vh;
-  background-size: cover;
-  background-position: center;
-  transition: background-image 1s ease-in-out;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
   overflow: hidden;
-  background-color: #121212;
 }
-.overlay {
-  position: absolute;
-  inset: 0;
-  backdrop-filter: blur(2px) brightness(0.2);
-  z-index: 0;
-}
+
 .auth-container {
-  z-index: 2;
   width: 90%;
-  max-width: 380px; 
+  max-width: 420px;
+  position: relative;
+  z-index: 2;
 }
 
-/*card glow */
-
+/* Auth Card */
 .auth-card {
-  background: #1e1e1e;
-  border-radius: 12px; 
-  padding: 35px 30px; 
-  color: #fff;
-  box-shadow: 
-    8px 8px 16px #0d0d0d,
-    -8px -8px 16px #2f2f2f,
-    0 0 20px rgba(0, 201, 167, 0.4);
-  animation: floatUp 1s cubic-bezier(0.25, 0.8, 0.5, 1) forwards;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.auth-form {
+  position: relative;
+  background: rgba(0, 0, 0, 0.25);
+  border: 2px solid rgba(18, 51, 3, 0.4);
+  border-radius: 28px;
+  padding: 42px 36px;
+  box-shadow:
+    0 14px 50px rgba(0, 0, 0, 0.35),
+    0 0 15px rgba(46, 204, 113, 0.5);
   display: flex;
   flex-direction: column;
-  /* Reduced gap between elements */
-  gap: 12px; 
+  gap: 12px;
+  overflow: hidden;
 }
 
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 28px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent 10%, rgba(0,0,0,0.3) 40%);
+  backdrop-filter: blur(2px);
+}
 
-.premium-title {
+.auth-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.45),
+    0 0 25px rgba(46, 204, 113, 0.7);
+}
+
+/* Form */
+form { display: flex; flex-direction: column; gap: 24px; }
+
+.title {
+  font-family: 'Agro', cursive;
+  margin-bottom: -20px;
+  font-size: 2.4rem;
   text-align: center;
-  /* Reduced base font size */
-  font-size: 2.2rem;
-  font-weight: normal;
-  color: #00C9A7;
-  letter-spacing: 0;
-  margin-bottom: 5px; 
-  display: flex;
-  justify-content: center;
-  align-items: baseline;
-  line-height: 1.1;
-  white-space: nowrap;
+  color: #fff;
+  letter-spacing: 1px;
+}
+.title span { color: #2ecc71; }
+
+.subtitle {
+  font-size: 1rem;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 40px;
+  z-index: 999;
 }
 
-.welcome-text {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-weight: 600;
-    font-size: 1em; 
-    margin-right: 4px;
-    color: #00C9A7;
-}
-
-.back-text {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    font-size: 1em; 
-    font-weight: 600;
-    color: #00C9A7;
-    text-shadow: none; 
-}
-
-/* Subtitle Styles */
-.subtitle-text {
-    text-align: center;
-    font-size: 0.95rem;
-    color: #888;
-    margin-bottom: 20px; 
-    font-weight: 300;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-}
-
-/* Input Group Styling */
-.input-group {
-    position: relative;
-    margin-bottom: 12px;
-}
-/* New style for password group */
-.input-group.password-group {
-    display: flex;
-    align-items: center;
-}
-
-input {
-  width: 90%;
-  
-  padding: 12px 13px; 
+/* Inputs */
+.input-group { position: relative; }
+.input-group input {
+  width: 100%;
+  padding: 14px 12px 10px;
   border: none;
-  border-radius: 8px;
-  background: #121212;
+  border-bottom: 2px solid rgba(255,255,255,.2);
+  background: none;
   color: #fff;
   font-size: 1rem;
   outline: none;
-  transition: all 0.3s;
-  box-shadow: inset 4px 4px 8px #0d0d0d, inset -4px -4px 8px #2f2f2f;
+  transition: border-color .3s, transform .3s;
+}
+.input-group input:focus { border-color: #2ecc71; transform: scale(1.02); }
+
+.input-group label {
+  position: absolute;
+  left: 12px;
+  top: 14px;
+  color: rgba(255,255,255,0.6);
+  pointer-events: none;
+  transition: all .25s;
+}
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+  top: -14px;
+  left: 0;
+  font-size: .75rem;
+  color: #2ecc71;
 }
 
-
-.password-toggle {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: transparent;
-    border: none;
-    color: #00C9A7; 
-    cursor: pointer;
-    font-size: 1.1rem;
-    padding: 5;
-    z-index: 10;
-    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5); 
-}
-.password-toggle:hover {
-    color: #00ffc7;
+.input-group input:-webkit-autofill,
+.input-group input:-webkit-autofill:hover,
+.input-group input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-text-fill-color: #fff !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
-
-input:focus {
-  background: #161616;
-  box-shadow: 
-    0 0 0 2px #c608db, 
-    inset 4px 4px 8px #0d0d0d, 
-    inset -4px -4px 8px #2f2f2f;
-  border-color: transparent;
+.toggle-pass {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  cursor: pointer;
 }
 
-input::placeholder {
-    color: #f1eded;
-}
-
-.input-group:focus-within::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 50%;
-    height: 3px;
-    background: #00C9A7;
-    width: 100%;
-    transform: translateX(-50%) scaleX(0);
-    animation: underline-wipe 0.3s forwards;
-    border-radius: 2px;
-}
-
-@keyframes underline-wipe {
-    100% {
-        transform: translateX(-50%) scaleX(1);
-    }
-}
-
-.btn-premium {
-  background: #00C9A7;
-  color: #121212;
-  border: none;
+/* Button */
+.btn-primary {
+  margin-top: 8px;
   padding: 14px;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 1.1rem;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #27ae60, #2ecc71, #27ae60);
+  background-size: 200% 100%;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 5px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 4px 4px 8px #0d0d0d, -4px -4px 8px #2f2f2f;
+  transition: all .35s;
+  animation: shimmer 3s infinite linear;
+  z-index: 999;
 }
-.btn-premium:hover {
-  background: #00a88d;
-  transform: translateY(-1px);
-  box-shadow: 
-    0 0 15px rgba(0, 201, 167, 0.7), 
-    6px 6px 12px #0d0d0d, 
-    -6px -6px 12px #2f2f2f;
+.btn-primary:hover {
+  background-position: 100% 0;
+  transform: scale(1.05);
 }
 
-.toggle {
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.85rem;
   text-align: center;
-  margin-top: 15px;
-  color: #ccc;
+  font-family: 'Calibri', sans-serif;
+  margin-top: 20px;
+  z-index: 999;
 }
-.toggle span {
-  color: #00C9A7;
+.links span {
+  color: #fff;
   cursor: pointer;
-  font-weight: 600;
-  transition: color 0.3s;
+  transition: transform 0.3s;
+  font-weight: bold;
+  font-style: italic;
 }
-.toggle span:hover {
-  color: #00ffc7;
+.links span:hover {
+  transform: scale(1.2);
   text-decoration: underline;
 }
-.toggle.small {
-  font-size: 0.9rem;
-  opacity: 0.8;
+
+/* Status */
+p.success { color: #2ecc71; font-size: .9rem; text-align: center; margin-top: -8px; z-index: 999;}
+p.error   { color: #e74c3c; font-size: .9rem; text-align: center; margin-top: -8px; z-index: 999; }
+p.info    { color: #00ff00; font-size: .9rem; text-align: center; margin-top: -8px; z-index: 999; }
+
+/* Animations */
+.flip-fade-enter-active { animation: flipIn 0.7s ease forwards; }
+.flip-fade-leave-active { animation: flipOut 0.6s ease forwards; }
+
+@keyframes flipIn {
+  0% { transform: rotateY(90deg); opacity: 0; }
+  50% { transform: rotateY(-15deg); opacity: 0.5; }
+  100% { transform: rotateY(0deg); opacity: 1; }
+}
+@keyframes flipOut {
+  0% { transform: rotateY(0deg); opacity: 1; }
+  100% { transform: rotateY(90deg); opacity: 0; }
 }
 
-
-.animated-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: 1;
+.icon-emoji {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: -42px;
+  z-index: 999;
 }
 
-.circle {
-    position: absolute;
-    display: block;
-    list-style: none;
-    background: #7d9793;
-    opacity: 0.08;
-    bottom: -150px; 
-    border-radius: 50%;
-    animation: grow-and-float 25s linear infinite;
+@keyframes shimmer {
+  0% { background-position: 0 0; }
+  100% { background-position: 200% 0; }
 }
 
-.circle.large { width: 100px; height: 100px; left: 10%; animation-duration: 10s; }
-.circle.medium { width: 60px; height: 60px; left: 40%; animation-duration: 20s; animation-delay: 5s; }
-.circle.small { width: 40px; height: 40px; left: 70%; animation-duration: 15s; animation-delay: 10s; }
-.circle.x-small { width: 20px; height: 20px; left: 90%; animation-duration: 40s; animation-delay: 2s; }
-
-
-@keyframes grow-and-float {
-    10% { transform: translateY(0) scale(1); opacity: 0.08; margin-left: 0; }
-    100% { transform: translateY(-1000px) scale(0.5); opacity: 0; margin-left: 50px; }
-}
-
-@keyframes floatUp {
-  30% { transform: translateY(30px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
-}
-
-
-.slide-up-fade-enter-active,
-.slide-up-fade-leave-active {
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.5, 1);
-}
-.slide-up-fade-enter-from { opacity: 0; transform: translateY(20px); }
-.slide-up-fade-leave-to { opacity: 0; transform: translateY(-20px); }
-
-
-@media (max-width: 768px) {
-  .auth-card { padding: 30px 20px; }
-  .premium-title { font-size: 1.8rem; }
-  .welcome-text { font-size: 1em; }
-  .back-text { font-size: 1em; }
+@media (max-width: 480px) {
+  .auth-card { padding: 32px 20px; }
+  .title { font-size: 2rem; }
 }
 </style>

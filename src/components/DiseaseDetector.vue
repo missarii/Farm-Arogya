@@ -54,7 +54,7 @@
 import { ref, computed } from 'vue'
 
 const lang = ref<'si' | 'ta' | 'en'>('si')
-const API = 'http://127.0.0.1:5000'
+const API = 'https://16.16.202.197'
 
 const file = ref<File | null>(null)
 const preview = ref<string | null>(null)
