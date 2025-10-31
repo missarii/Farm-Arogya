@@ -1,3 +1,4 @@
+<!-- Written by Richi Johan -->
 <template>
   <div class="farming-tools-page" id="farming-tools-app">
     <!-- FILTER SIDEBAR -->
