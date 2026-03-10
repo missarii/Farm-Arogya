@@ -198,33 +198,28 @@ async function loginUser() {
   statusMsg.value = 'Logging in...'
   statusClass.value = 'info'
 
-  // DEV shortcut
-  if (username.value === 'orange' && password.value === '123') {
-    statusMsg.value = 'Welcome, Developer!'
+  // Admin check
+  if (username.value === 'admin' && password.value === 'admin8080') {
+    statusMsg.value = 'Welcome, Admin!'
     statusClass.value = 'success'
+    localStorage.setItem('currentUser', JSON.stringify({ username: 'admin', role: 'admin' }))
     resetForm()
-    router.push('/main')
+    router.push('/admin')
     return
   }
 
-  try {
-    const r = await fetch(`${API_URL}/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: username.value, password: password.value })
-    })
-    const j = await r.json()
-    if (r.ok) {
-      statusMsg.value = 'Login successful!'
-      statusClass.value = 'success'
-      resetForm()
-      router.push('/main')  // Go to Main via router
-    } else {
-      statusMsg.value = j.error || 'Invalid credentials'
-      statusClass.value = 'error'
-    }
-  } catch {
-    statusMsg.value = 'Cannot connect to server'
+  // Regular user check from localStorage
+  const users = JSON.parse(localStorage.getItem('users') || '[]')
+  const user = users.find(u => u.username === username.value && u.password === password.value)
+
+  if (user) {
+    statusMsg.value = 'Login successful!'
+    statusClass.value = 'success'
+    localStorage.setItem('currentUser', JSON.stringify({ username: user.username, role: 'user' }))
+    resetForm()
+    router.push('/main')
+  } else {
+    statusMsg.value = 'Invalid credentials'
     statusClass.value = 'error'
   }
 }
@@ -234,26 +229,26 @@ async function signupUser() {
   statusMsg.value = 'Creating account...'
   statusClass.value = 'info'
 
-  try {
-    const r = await fetch(`${API_URL}/signup`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: username.value, email: email.value, password: password.value })
-    })
-    const j = await r.json()
-    if (r.ok) {
-      statusMsg.value = 'Signup successful! Redirecting to login...'
-      statusClass.value = 'success'
-      resetForm()
-      setTimeout(() => switchTab('login'), 1500)
-    } else {
-      statusMsg.value = j.errors?.join(', ') || 'Signup failed'
-      statusClass.value = 'error'
-    }
-  } catch {
-    statusMsg.value = 'Cannot connect to server'
+  if (username.value === 'admin') {
+    statusMsg.value = 'Username "admin" is reserved'
     statusClass.value = 'error'
+    return
   }
+
+  const users = JSON.parse(localStorage.getItem('users') || '[]')
+  if (users.find(u => u.username === username.value)) {
+    statusMsg.value = 'Username already exists'
+    statusClass.value = 'error'
+    return
+  }
+
+  users.push({ username: username.value, email: email.value, password: password.value })
+  localStorage.setItem('users', JSON.stringify(users))
+
+  statusMsg.value = 'Signup successful! Redirecting to login...'
+  statusClass.value = 'success'
+  resetForm()
+  setTimeout(() => switchTab('login'), 1500)
 }
 
 // Reset password (mock)

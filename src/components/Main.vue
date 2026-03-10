@@ -1,19 +1,20 @@
+<!-- FarmArogya.vue  (single-file component) -->
 <template>
-  <!-- ===============  CRICKET + AGRICULTURE PRELOADER  =============== -->
+  <!-- =================  REALISTIC CRICKET PRE-LOADER  ================= -->
   <transition name="fade">
     <div v-if="loading" class="cricket-preloader">
       <!-- SVG SUN -->
       <svg class="sun-svg" viewBox="0 0 200 200">
         <circle cx="100" cy="100" r="40" fill="#f1c40f"/>
         <g class="rays">
-          <line x1="100" y1="20" x2="100" y2="50" stroke="#f1c40f" stroke-width="5"/>
-          <line x1="155" y1="45" x2="135" y2="65" stroke="#f1c40f" stroke-width="5"/>
-          <line x1="180" y1="100" x2="150" y2="100" stroke="#f1c40f" stroke-width="5"/>
-          <line x1="155" y1="155" x2="135" y2="135" stroke="#f1c40f" stroke-width="5"/>
-          <line x1="100" y1="180" x2="100" y2="150" stroke="#f1c40f" stroke-width="5"/>
-          <line x1="45"  y1="155" x2="65"  y2="135" stroke="#f1c40f" stroke-width="5"/>
-          <line x1="20"  y1="100" x2="50"  y2="100" stroke="#f1c40f" stroke-width="5"/>
-          <line x1="45"  y1="45"  x2="65"  y2="65"  stroke="#f1c40f" stroke-width="5"/>
+          <line x1="100" y1="20" x2="100" y2="50" stroke="#f1c40f" stroke-width="5" stroke-linecap="round"/>
+          <line x1="155" y1="45" x2="135" y2="65" stroke="#f1c40f" stroke-width="5" stroke-linecap="round"/>
+          <line x1="180" y1="100" x2="150" y2="100" stroke="#f1c40f" stroke-width="5" stroke-linecap="round"/>
+          <line x1="155" y1="155" x2="135" y2="135" stroke="#f1c40f" stroke-width="5" stroke-linecap="round"/>
+          <line x1="100" y1="180" x2="100" y2="150" stroke="#f1c40f" stroke-width="5" stroke-linecap="round"/>
+          <line x1="45"  y1="155" x2="65"  y2="135" stroke="#f1c40f" stroke-width="5" stroke-linecap="round"/>
+          <line x1="20"  y1="100" x2="50"  y2="100" stroke="#f1c40f" stroke-width="5" stroke-linecap="round"/>
+          <line x1="45"  y1="45"  x2="65"  y2="65"  stroke="#f1c40f" stroke-width="5" stroke-linecap="round"/>
         </g>
       </svg>
 
@@ -25,7 +26,7 @@
         <path d="M30 60 Q15 60 15 45 Q5 45 5 30 Q5 15 20 15 Q25 5 35 5 Q45 0 55 0 Q70 0 75 10 Q90 10 95 20 Q110 20 110 35 Q110 50 95 50 Q85 60 70 60 Z" fill="#ffffff" opacity="0.75"/>
       </svg>
 
-      <!-- CRICKET SCORE-BOARD -->
+      <!-- REALISTIC SCORE-BOARD -->
       <div class="score-board">
         <div class="digit-box" v-for="(d,i) in displayDigits" :key="i">
           <span class="digit">{{ d }}</span>
@@ -38,7 +39,7 @@
   <div class="intro-page" :style="{ backgroundImage: `url('${currentBg}')` }">
     <div class="overlay"></div>
     <h1 class="fade-in">
-      <span class="welcome-text">Welcome to</span>
+      <span class="welcome-text">🌿 Welcome to</span>
       <span :class="farmarogyaClass">
         <template v-for="(char, index) in letters" :key="index">
           <span
@@ -84,6 +85,25 @@
           <img :src="currentDiseaseImg" alt="Disease Detection" />
           <p>Disease Detection</p>
         </div>
+        <!-- ADMIN PANEL OPTION -->
+        <div v-if="currentUser && currentUser.role === 'admin'" class="option admin-opt" @click="handleSelect('admin')">
+          <div class="admin-icon">⚙️</div>
+          <p>Admin Panel</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOVED USER INFO TO BOTTOM -->
+    <div class="user-info-bottom" v-if="currentUser">
+      <div class="user-glass">
+        <div class="user-avatar">{{ currentUser.username.charAt(0).toUpperCase() }}</div>
+        <div class="user-details">
+          <span class="user-name">Hello, {{ currentUser.username }}</span>
+        </div>
+        <button @click="logout" class="logout-btn-new">
+          <span class="icon">🚪</span>
+          <span class="text">Logout</span>
+        </button>
       </div>
     </div>
   </div>
@@ -94,6 +114,14 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+
+/* -----------  AUTH STATE  ----------- */
+const currentUser = ref(JSON.parse(localStorage.getItem('currentUser') || 'null'))
+
+function logout() {
+  localStorage.removeItem('currentUser')
+  router.push('/')
+}
 
 /* -----------  PRELOADER STATE  ----------- */
 const loading = ref(true)
@@ -133,6 +161,10 @@ function preloadImage(src){
   })
 }
 onMounted(async()=>{
+  if (!currentUser.value) {
+    router.push('/')
+    return
+  }
   await Promise.all(allImages.map(preloadImage))
   setTimeout(()=>loading.value=false, 400)
 })
@@ -140,9 +172,9 @@ onMounted(async()=>{
 /* -----------  NAVIGATION  ----------- */
 const handleSelect=page=>{
   const external={
-    soiltest:'https://farm-arogya-soiltest-ai.pages.dev/',
-    chat:'http://13.48.177.178:5000/',
-    disease:'https://16.16.202.197/'
+    soiltest:'https://farm-arogya-soiltest-ai.pages.dev/ ',
+    chat:'http://161.33.86.128:8000/ ',
+    disease:'http://152.69.179.28:8000/ '
   }
   external[page] ? window.location.href=external[page] : router.push(`/${page}`)
 }
@@ -248,31 +280,43 @@ onMounted(()=>{
 }
 /* SCORE-BOARD */
 .score-board{
-  
-  display:flex; gap:8px;
-  background:#111; padding:15px 20px; border-radius:12px;
-  box-shadow:0 0 25px rgba(0,0,0,.5), inset 0 0 15px rgba(255,255,255,.08);
+  display:flex; gap:10px;
+  background:#121212;
+  padding:18px 24px;
+  border-radius:14px;
+  box-shadow:
+    0 0 0 4px #222,
+    0 12px 30px rgba(0,0,0,.6),
+    inset 0 0 8px rgba(0,0,0,.8);
+  perspective:400px;
 }
 .digit-box{
-  
-  width:clamp(50px, 10vw, 80px); height:clamp(70px, 14vw, 110px);
-  background:#0f0f0f; border:3px solid #222; border-radius:8px;
-  display:flex; align-items:center; justify-content:center;
+  width:clamp(55px, 10vw, 90px);
+  height:clamp(80px, 14vw, 120px);
+  background:#000;
+  border:3px solid #1a1a1a;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   overflow:hidden;
+  box-shadow:inset 0 0 8px rgba(0,0,0,.9);
 }
 .digit{
   font-family:'Courier New', monospace; font-weight:900;
-  font-size:clamp(2.5rem, 10vw, 5rem); color:#00ff00;
-  line-height:1; animation:tickFlip .4s ease;
+  font-size:clamp(2.8rem, 10vw, 5.5rem); color:#00ff00;
+  line-height:1;
+  text-shadow:0 0 4px #00ff00, 0 0 12px #00ff00;
+  animation:tickFlip .5s ease;
 }
 @keyframes tickFlip{
-  0%  { transform:translateY(-100%); opacity:0; }
-  100%{ transform:translateY(0); opacity:1; }
+  0%  { transform:rotateX(-90deg); opacity:0; }
+  100%{ transform:rotateX(0); opacity:1; }
 }
 .fade-enter-active,.fade-leave-active{ transition:opacity .6s ease; }
 .fade-enter-from,.fade-leave-to{ opacity:0; }
 
-/* ===============  PAGE STYLES (same as before)  =============== */
+/* ===============  PAGE STYLES  =============== */
 .intro-page{
   position:relative; min-height:100vh; background-size:cover; background-position:center;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -295,7 +339,15 @@ h1{
   font-family:'Jejak',cursive; font-size:clamp(2.5rem,5vw,3.2rem); color:#27ae60;
 }
 .farmarogya.firefox{
-  background:linear-gradient(120deg,#0f3d27 20%,#27ae60 40%,#a9dfbf 60%,#27ae60 80%,#0f3d27 100%);
+  background: linear-gradient(
+  120deg,
+  #28850c80 0%,    /* bright lime green */
+  #01c407cb 25%,   /* medium green */
+  #34be49bd 50%,   /* soft pastel green */
+  #2e7d32 75%,   /* deep green */
+  #26b30da2 100%   /* forest green */
+);
+
   background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent;
   animation:shineGreen 4s linear infinite;
 }
@@ -324,6 +376,103 @@ h1{
   .top-row,.bottom-row{ flex-direction:column; align-items:center; }
   .option{ width:80%; max-width:280px; padding:20px; }
   .option img{ height:110px; }
+}
+
+/* REFINED USER INFO BOTTOM STYLES */
+.user-info-bottom {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: auto;
+  min-width: 300px;
+}
+
+.user-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 20px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.user-glass:hover {
+  background: rgba(46, 204, 113, 0.15);
+  border-color: rgba(46, 204, 113, 0.4);
+  transform: scale(1.05);
+  box-shadow: 0 15px 40px rgba(46, 204, 113, 0.2);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: white;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.user-name {
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.user-role {
+  color: #2ecc71;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.logout-btn-new {
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  color: #e74c3c;
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  transition: all 0.3s;
+}
+
+.logout-btn-new:hover {
+  background: #e74c3c;
+  color: #fff;
+  box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+}
+
+.admin-opt {
+  background: rgba(39, 174, 96, 0.4) !important;
+  border: 2px solid #2ecc71;
+  box-shadow: 0 0 20px rgba(46, 204, 113, 0.4);
+}
+
+.admin-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
 }
 @keyframes fallDown{ to{ opacity:1; transform:translateY(0); } }
 </style>

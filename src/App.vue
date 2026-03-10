@@ -5,7 +5,6 @@
 </template>
 
 <script setup>
-import './assets/style/ai_style.css'
 </script>
 
 <style>

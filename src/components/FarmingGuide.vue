@@ -1,4 +1,3 @@
-```vue
 <template>
   <div class="app-container">
     <div class="falling-leaves" :class="{ visible: showLeaves }">
@@ -14,7 +13,7 @@
     <!-- Plant Grid -->
     <div v-if="!selectedPlant" class="plant-grid">
       <div v-for="(p, key) in filteredPlants" :key="key" class="plant-card" @click="selectPlant(key)">
-        <img :src="`/src/assets/plants/${key}.png`" :alt="p.display" class="plant-img" />
+        <img :src="`/plants/${key}.png`" :alt="p.display" class="plant-img" />
         <div class="plant-info">
           <h2>{{ p.display }}</h2>
           <p>{{ p.short }}</p>
@@ -31,7 +30,7 @@
       <div v-if="selectedPlant" class="plant-details">
         <button @click="selectedPlant = null" class="back-btn">← Back to Plants</button>
         <div class="details-card">
-          <img :src="`/src/assets/plants/${selectedPlant}.png`" :alt="selected.display" class="details-img" />
+          <img :src="`/plants/${selectedPlant}.png`" :alt="selected.display" class="details-img" />
           <h2>{{ selected.display }}</h2>
           <p class="description">{{ selected.description }}</p>
           <ul>
@@ -1035,4 +1034,3 @@ footer {
   transform: translateX(100%);
 }
 </style>
-```

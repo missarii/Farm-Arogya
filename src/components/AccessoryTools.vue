@@ -1,4 +1,3 @@
-<!-- Written by Richi Johan -->
 <template>
   <div class="farming-tools-page" id="farming-tools-app">
     <!-- FILTER SIDEBAR -->
@@ -208,6 +207,11 @@
             </div>
           </div>
 
+          <div class="form-row">
+            <label>Feedback / Instruction</label>
+            <textarea v-model="checkout.message" rows="2" placeholder="Any special instruction or feedback?"></textarea>
+          </div>
+
           <div class="form-actions">
             <button class="place-order-btn" @click="placeOrder">Place Order (COD)</button>
             <button class="cancel-btn" @click="closeCheckout">Cancel</button>
@@ -235,7 +239,7 @@
           <div class="receipt-total">Total: Rs. {{ formatNumber(orderPlaced.total) }}</div>
 
           <div class="receipt-actions">
-            <button class="print-btn" @click="printReceipt">Print Receipt</button>
+            <button class="print-btn" @click="downloadPDF">Download Invoice / PDF</button>
             <button class="done-btn" @click="closeReceipt">Done</button>
           </div>
         </div>
@@ -608,7 +612,7 @@ function applyFilters() { if (!filters.value.priceMin && filters.value.priceMin 
    Checkout & Order flow
    --------------------------- */
 const checkoutOpen = ref(false)
-const checkout = ref({ name: '', phone: '', address: '', city: '', pincode: '' })
+const checkout = ref({ name: '', phone: '', address: '', city: '', pincode: '', message: '' })
 const errors = ref({})
 const orderPlaced = ref(null)
 
@@ -635,26 +639,121 @@ function placeOrder() {
   const order = { id, date, customer, items, total, paymentMethodLabel: 'Cash on Delivery' }
   orderPlaced.value = order
 
+  // Save order to allOrders for Admin Panel
+  const allOrders = JSON.parse(localStorage.getItem('allOrders') || '[]');
+  const newOrder = {
+    id: order.id,
+    date: order.date,
+    customer: { ...order.customer },
+    items: items.map(item => ({ name: item.name, qty: item.quantity, price: item.price })),
+    total: order.total,
+    status: 'Confirmed',
+    source: 'AccessoryTools',
+    message: checkout.value.message || 'No message provided'
+  };
+  allOrders.push(newOrder);
+  localStorage.setItem('allOrders', JSON.stringify(allOrders));
+
   // clear cart & checkout
   cart.value = []
   checkoutOpen.value = false
-  checkout.value = { name: '', phone: '', address: '', city: '', pincode: '' }
+  checkout.value = { name: '', phone: '', address: '', city: '', pincode: '', message: '' }
 }
 
 /* ---------------------------
    Printing receipt
    --------------------------- */
-function printReceipt() {
-  const el = document.getElementById('receipt')
-  if (!el) { alert('No receipt to print.'); return }
-  const css = `<style>body{font-family:Arial,Helvetica,sans-serif;padding:18px;color:#111}h4{margin-top:0}.receipt-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee}.receipt-total{margin-top:12px;font-weight:900;font-size:16px}.receipt-items{margin-top:8px}</style>`
-  const newWindow = window.open('', '_blank', 'width=800,height=700')
-  newWindow.document.write('<!doctype html><html><head><title>Receipt</title>' + css + '</head><body>')
-  newWindow.document.write(el.outerHTML)
-  newWindow.document.write('</body></html>')
-  newWindow.document.close()
-  newWindow.focus()
-  setTimeout(() => { newWindow.print(); newWindow.close() }, 300)
+function downloadPDF() {
+  const el = document.getElementById('receipt');
+  if (!el || !orderPlaced.value) { alert('No receipt to print.'); return }
+  
+  const css = `
+    <style>
+      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; line-height: 1.6; }
+      .header { text-align: center; border-bottom: 2px solid #2ecc71; padding-bottom: 20px; margin-bottom: 30px; }
+      .header h1 { color: #27ae60; margin: 0; font-size: 28px; text-transform: uppercase; }
+      .header p { margin: 5px 0; color: #666; font-size: 14px; }
+      .section-title { font-size: 18px; font-weight: 800; color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-top: 30px; margin-bottom: 15px; }
+      .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+      .info-box p { margin: 4px 0; font-size: 14px; }
+      .info-box strong { color: #555; }
+      table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+      th { background: #f8fafc; color: #2ecc71; text-align: left; padding: 12px; font-size: 12px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; }
+      td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+      .total-section { text-align: right; margin-top: 30px; padding-top: 20px; border-top: 2px solid #eee; }
+      .total-amount { font-size: 22px; font-weight: 900; color: #2ecc71; }
+      .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #aaa; border-top: 1px solid #eee; padding-top: 20px; }
+      .msg-box { background: #f9f9f9; padding: 15px; border-left: 4px solid #2ecc71; font-style: italic; margin-top: 10px; }
+    </style>
+  `;
+
+  const itemsHtml = orderPlaced.value.items.map(it => `
+    <tr>
+      <td>${it.name}</td>
+      <td style="text-align: center;">${it.quantity || it.qty}</td>
+      <td style="text-align: right;">Rs. ${it.price.toLocaleString()}</td>
+      <td style="text-align: right; font-weight: bold;">Rs. ${(it.price * (it.quantity || it.qty)).toLocaleString()}</td>
+    </tr>
+  `).join('');
+
+  const content = `
+    <div class="header">
+      <h1>Farm Arogya</h1>
+      <p>Official Order Confirmation & Invoice</p>
+      <p>Order ID: <strong>${orderPlaced.value.id}</strong> | Date: ${orderPlaced.value.date}</p>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-box">
+        <div class="section-title">Customer Details</div>
+        <p><strong>Name:</strong> ${orderPlaced.value.customer.name}</p>
+        <p><strong>Phone:</strong> ${orderPlaced.value.customer.phone}</p>
+        <p><strong>Address:</strong> ${orderPlaced.value.customer.address}, ${orderPlaced.value.customer.city}</p>
+        <p><strong>Zip Code:</strong> ${orderPlaced.value.customer.pincode}</p>
+      </div>
+      <div class="info-box">
+        <div class="section-title">Payment Info</div>
+        <p><strong>Method:</strong> Cash on Delivery (COD)</p>
+        <p><strong>Status:</strong> Confirmed</p>
+      </div>
+    </div>
+
+    <div class="section-title">Ordered Items</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th style="text-align: center;">Qty</th>
+          <th style="text-align: right;">Unit Price</th>
+          <th style="text-align: right;">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>${itemsHtml}</tbody>
+    </table>
+
+    <div class="total-section">
+      <p style="margin: 0; color: #666;">Grand Total Amount</p>
+      <div class="total-amount">Rs. ${orderPlaced.value.total.toLocaleString()}</div>
+    </div>
+
+    <div class="section-title">Customer Message / Instructions</div>
+    <div class="msg-box">
+      ${orderPlaced.value.message || 'No specific instructions provided.'}
+    </div>
+
+    <div class="footer">
+      <p>Thank you for shopping with Farm Arogya! We appreciate your business.</p>
+      <p>&copy; 2026 Farm Arogya Marketplace. All rights reserved.</p>
+    </div>
+  `;
+
+  const newWindow = window.open('', '_blank', 'width=900,height=800');
+  newWindow.document.write('<!doctype html><html><head><title>Invoice - ' + orderPlaced.value.id + '</title>' + css + '</head><body>');
+  newWindow.document.write(content);
+  newWindow.document.write('</body></html>');
+  newWindow.document.close();
+  newWindow.focus();
+  setTimeout(() => { newWindow.print(); newWindow.close(); }, 500);
 }
 
 function closeReceipt() { orderPlaced.value = null }

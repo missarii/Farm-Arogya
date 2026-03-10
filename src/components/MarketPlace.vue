@@ -474,6 +474,29 @@ const generateOrder = () => {
   }, 0);
   orderTax.value = orderSubtotal.value * 0.1;
   orderTotal.value = orderSubtotal.value + orderTax.value + orderDelivery.value;
+  
+  // Save order to allOrders for Admin Panel
+  const allOrders = JSON.parse(localStorage.getItem('allOrders') || '[]');
+  const newOrder = {
+    id: '#' + lastOrderId.value,
+    date: new Date().toLocaleString(),
+    customer: { ...orderDetails.value },
+    items: cart.value.map(item => {
+      const prod = getProduct(item.id);
+      return {
+        name: prod.name,
+        qty: item.qty,
+        price: getDiscountedPrice(prod)
+      };
+    }),
+    total: orderTotal.value,
+    status: 'Confirmed',
+    source: 'MarketPlace',
+    message: orderDetails.value.note || 'No message provided'
+  };
+  allOrders.push(newOrder);
+  localStorage.setItem('allOrders', JSON.stringify(allOrders));
+
   showOrderSummary.value = true;
 };
 
