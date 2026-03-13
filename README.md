@@ -106,16 +106,14 @@ FarmArogya is built as a highly responsive **Single Page Application (SPA)** wit
 
 ## 👨‍💻 Developer & Visionary
 
-Shanuka
-Missari
-Joyana
-Richi Johan
+Shanuka,
+Missari,
+Joyana,
+Richi Johan,.
 Mentor - Hasitha Jagoda
 
 FarmArogya is a passion project dedicated to revolutionizing the agricultural landscape of Sri Lanka and beyond, making farming a high-tech, profitable, and respected profession.
 
----
-© 2026 FarmArogya Ecosystem. All rights reserved.
 
 ---
 © 2026 FarmArogya Ecosystem. All rights reserved.
