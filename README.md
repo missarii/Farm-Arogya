@@ -103,12 +103,6 @@ FarmArogya is built as a highly responsive **Single Page Application (SPA)** wit
 
 ---
 
-## 👨‍💻 Developer & Visionary
-
-**Missari Ahil**  
-*Founder & CTO, Orange University LLC*
-
-FarmArogya is a passion project dedicated to revolutionizing the agricultural landscape of Sri Lanka and beyond, making farming a high-tech, profitable, and respected profession.
 
 ---
 © 2026 FarmArogya Ecosystem. All rights reserved.
